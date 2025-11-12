@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habilidades - tturco.omg</title>
+    <style>
+        :root {
+           
+            
+            --neon-blue: #2b71b8;
+            --neon-red: #d5bbb5;
+            --neon-purple: #8000ff;
+            --dark-bg: #0a0a0a;
+            --darker-bg: #050505;
+            --card-bg: rgba(20, 20, 20, 0.92);
+            --header-bg: rgba(30, 30, 30, 0.95);
+            --blood-red: #7f6969;
+            --hunter-gray: #2a2a2a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: #fff;
+            font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+            overflow-x: hidden;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* === FONDO BLOODBORNE === */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(139, 0, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 0, 0, 0.1) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -2;
+            animation: gridMove 25s linear infinite;
+        }
+
+        .grid-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(139, 0, 0, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 64, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 40% 80%, rgba(128, 0, 255, 0.08) 0%, transparent 40%);
+            animation: bloodPulse 12s ease-in-out infinite;
+        }
+
+        .bloodborne-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, 
+                    rgba(139, 0, 0, 0.1) 0%, 
+                    transparent 20%,
+                    rgba(42, 42, 42, 0.2) 40%,
+                    transparent 60%,
+                    rgba(139, 0, 0, 0.1) 80%,
+                    transparent 100%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="gothic" patternUnits="userSpaceOnUse" width="20" height="20"><path d="M0,0 L20,20 M20,0 L0,20" stroke="rgba(139,0,0,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23gothic)"/></svg>');
+            z-index: -1;
+            opacity: 0.6;
+            mix-blend-mode: overlay;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(60px, 60px) rotate(0.5deg); }
+        }
+
+        @keyframes bloodPulse {
+            0%, 100% { 
+                opacity: 0.3;
+                filter: hue-rotate(0deg);
+            }
+            50% { 
+                opacity: 0.6;
+                filter: hue-rotate(10deg);
+            }
+        }
+
+        /* === NAVEGACIÓN GÓTICA-CYBER === */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(139, 0, 0, 0.3);
+            box-shadow: 
+                0 0 30px rgba(0, 0, 0, 0.7),
+                0 0 60px rgba(139, 0, 0, 0.2);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--neon-red);
+            text-shadow: 
+                0 0 10px var(--neon-red),
+                0 0 20px var(--neon-red),
+                0 0 30px var(--neon-red);
+            letter-spacing: 3px;
+            position: relative;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .logo::before {
+            content: '☥';
+            margin-right: 10px;
+            font-size: 20px;
+            color: var(--neon-cyan);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-red), transparent);
+            box-shadow: 0 0 10px var(--neon-red);
+            animation: bloodScan 3s linear infinite;
+        }
+
+        @keyframes bloodScan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            background: rgba(42, 42, 42, 0.8);
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid rgba(139, 0, 0, 0.3);
+        }
+
+        .nav-links a {
+            color: #ccc;
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-red);
+            background: rgba(139, 0, 0, 0.2);
+            text-shadow: 0 0 10px var(--neon-red);
+        }
+
+        .nav-links a.active {
+            color: var(--neon-red);
+            background: rgba(139, 0, 0, 0.3);
+            text-shadow: 0 0 15px var(--neon-red);
+            border: 1px solid rgba(139, 0, 0, 0.5);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .social-links a {
+            color: #ccc;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            font-size: 11px;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .social-links a:hover {
+            border-color: var(--neon-red);
+            color: var(--neon-red);
+            box-shadow: 
+                0 0 10px var(--neon-red),
+                inset 0 0 10px rgba(139, 0, 0, 0.2);
+        }
+
+        /* === CONTENEDOR PRINCIPAL === */
+        .container {
+            position: relative;
+            z-index: 10;
+            padding: 120px 40px 60px;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            align-items: start;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* === HEADER DE PÁGINA === */
+        .page-header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: rgba(42, 42, 42, 0.6);
+            border-radius: 15px;
+            border: 1px solid rgba(139, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, 
+                    transparent, 
+                    rgba(139, 0, 0, 0.1), 
+                    rgba(0, 255, 255, 0.05), 
+                    transparent);
+            animation: hunterShimmer 8s ease-in-out infinite;
+        }
+
+        .page-header::after {
+            content: '⚔️';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2em;
+            opacity: 0.3;
+            animation: weaponFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes hunterShimmer {
+            0%, 100% { transform: translateX(-100%) rotate(-5deg); }
+            50% { transform: translateX(100%) rotate(5deg); }
+        }
+
+        @keyframes weaponFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(10deg); }
+        }
+
+        .page-header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            position: relative;
+            font-family: 'Times New Roman', serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .page-header p {
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+
+        /* === VENTANAS DE HABILIDADES === */
+        .window {
+            background: var(--card-bg);
+            border: 1px solid rgba(139, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(139, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .window::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--neon-red), 
+                var(--neon-cyan), 
+                transparent);
+            animation: headerGlow 4s ease-in-out infinite;
+        }
+
+        .window:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.6),
+                0 0 50px rgba(139, 0, 0, 0.3),
+                0 0 80px rgba(0, 255, 255, 0.2);
+            border-color: rgba(139, 0, 0, 0.6);
+        }
+
+        @keyframes headerGlow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .window-header {
+            background: var(--header-bg);
+            padding: 18px 25px;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            position: relative;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .window-header::before {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--neon-red), 
+                var(--neon-cyan), 
+                transparent);
+        }
+
+        .window-close {
+            cursor: pointer;
+            color: var(--neon-red);
+            font-weight: bold;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            background: rgba(139, 0, 0, 0.1);
+        }
+
+        .window-close:hover {
+            background: rgba(139, 0, 0, 0.3);
+            text-shadow: 0 0 15px var(--neon-red);
+            transform: scale(1.2);
+        }
+
+        .window-content {
+            padding: 35px;
+        }
+
+        /* === CATEGORÍAS DE HABILIDADES === */
+        .skill-category h3 {
+            margin-bottom: 30px;
+            font-size: 1.6em;
+            text-align: center;
+            padding: 15px;
+            background: rgba(139, 0, 0, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-category h3::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(139, 0, 0, 0.2), 
+                transparent);
+            animation: titleScan 3s ease-in-out infinite;
+        }
+
+        @keyframes titleScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .skill-grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .skill-item {
+            background: linear-gradient(135deg, 
+                rgba(42, 42, 42, 0.6), 
+                rgba(30, 30, 30, 0.8));
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(139, 0, 0, 0.1), 
+                transparent 30%);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .skill-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: var(--neon-red);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(139, 0, 0, 0.3);
+        }
+
+        .skill-item:hover::before {
+            opacity: 1;
+        }
+
+        .skill-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+            text-align: center;
+            filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.5));
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover .skill-icon {
+            transform: scale(1.2) rotate(5deg);
+            filter: drop-shadow(0 0 15px var(--neon-red));
+        }
+
+        .skill-item h4 {
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            color: var(--neon-cyan);
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .skill-item p {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 2;
+        }
+
+        .skill-level {
+            position: relative;
+            z-index: 2;
+        }
+
+        .level-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(42, 42, 42, 0.8);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(139, 0, 0, 0.3);
+        }
+
+        .level-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            animation: skillScan 2s linear infinite;
+        }
+
+        .level-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: var(--skill-level, 0%);
+            height: 100%;
+            background: linear-gradient(90deg, 
+                var(--neon-red), 
+                var(--neon-purple));
+            border-radius: 4px;
+            transition: width 1.5s ease-out;
+            box-shadow: 
+                0 0 10px var(--neon-red),
+                inset 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes skillScan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* === COLORS POR CATEGORÍA === */
+        .skills-window:nth-child(1) .skill-item { border-color: rgba(0, 255, 255, 0.3); }
+        .skills-window:nth-child(1) .skill-item:hover { border-color: var(--neon-cyan); }
+        .skills-window:nth-child(1) .level-bar::after { background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue)); }
+
+        .skills-window:nth-child(2) .skill-item { border-color: rgba(0, 255, 0, 0.3); }
+        .skills-window:nth-child(2) .skill-item:hover { border-color: #00ff00; }
+        .skills-window:nth-child(2) .level-bar::after { background: linear-gradient(90deg, #00ff00, #00cc00); }
+
+        .skills-window:nth-child(3) .skill-item { border-color: rgba(255, 0, 255, 0.3); }
+        .skills-window:nth-child(3) .skill-item:hover { border-color: var(--neon-pink); }
+        .skills-window:nth-child(3) .level-bar::after { background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple)); }
+
+        /* === ELEMENTOS DECORATIVOS BLOODBORNE === */
+        .character {
+            position: fixed;
+            bottom: -150px;
+            right: -150px;
+            width: 600px;
+            height: 800px;
+            background: 
+                radial-gradient(circle at 30% 70%, rgba(139, 0, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(0, 255, 255, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            opacity: 0.1;
+            animation: hunterPresence 15s ease-in-out infinite;
+        }
+
+        @keyframes hunterPresence {
+            0%, 100% { 
+                opacity: 0.1;
+                transform: scale(1) rotate(0deg);
+            }
+            50% { 
+                opacity: 0.15;
+                transform: scale(1.05) rotate(2deg);
+            }
+        }
+
+        .blood-drips {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .blood-drip {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--blood-red), transparent);
+            animation: bloodDrip 8s linear infinite;
+            opacity: 0;
+        }
+
+        .blood-drip:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .blood-drip:nth-child(2) { left: 25%; animation-delay: 2s; }
+        .blood-drip:nth-child(3) { left: 40%; animation-delay: 4s; }
+        .blood-drip:nth-child(4) { left: 60%; animation-delay: 1s; }
+        .blood-drip:nth-child(5) { left: 75%; animation-delay: 3s; }
+        .blood-drip:nth-child(6) { left: 90%; animation-delay: 5s; }
+
+        @keyframes bloodDrip {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        .barcode {
+            position: fixed;
+            bottom: 30px;
+            left: 40px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: rgba(139, 0, 0, 0.4);
+            letter-spacing: 3px;
+            z-index: 1;
+            animation: barcodeFlicker 6s ease-in-out infinite;
+        }
+
+        @keyframes barcodeFlicker {
+            0%, 100% { opacity: 0.3; text-shadow: 0 0 5px rgba(139, 0, 0, 0.3); }
+            50% { opacity: 0.6; text-shadow: 0 0 10px rgba(139, 0, 0, 0.6); }
+        }
+
+        /* === EFECTOS DE TEXTO === */
+        .neon-text {
+            color: var(--neon-red);
+            text-shadow: 
+                0 0 5px var(--neon-red),
+                0 0 10px var(--neon-red),
+                0 0 20px var(--neon-red),
+                0 0 40px var(--neon-red);
+            animation: bloodPulseText 3s ease-in-out infinite alternate;
+        }
+
+        .cyan-text {
+            color: var(--neon-cyan);
+            text-shadow: 
+                0 0 5px var(--neon-cyan),
+                0 0 10px var(--neon-cyan),
+                0 0 20px var(--neon-cyan),
+                0 0 40px var(--neon-cyan);
+            animation: cyanPulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes bloodPulseText {
+            from {
+                text-shadow: 
+                    0 0 5px var(--neon-red),
+                    0 0 10px var(--neon-red),
+                    0 0 20px var(--neon-red);
+            }
+            to {
+                text-shadow: 
+                    0 0 10px var(--neon-red),
+                    0 0 20px var(--neon-red),
+                    0 0 30px var(--neon-red),
+                    0 0 40px var(--neon-red);
+            }
+        }
+
+        @keyframes cyanPulse {
+            from {
+                text-shadow: 
+                    0 0 5px var(--neon-cyan),
+                    0 0 10px var(--neon-cyan),
+                    0 0 20px var(--neon-cyan);
+            }
+            to {
+                text-shadow: 
+                    0 0 10px var(--neon-cyan),
+                    0 0 20px var(--neon-cyan),
+                    0 0 30px var(--neon-cyan),
+                    0 0 40px var(--neon-cyan);
+            }
+        }
+
+        .glitch {
+            position: relative;
+            color: #fff;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 25px;
+                padding: 120px 30px 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 12px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                gap: 5px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links a {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            
+            .social-links {
+                gap: 8px;
+            }
+            
+            .container {
+                padding: 140px 20px 30px;
+            }
+            
+            .window-content {
+                padding: 25px;
+            }
+            
+            .page-header h1 {
+                font-size: 2.2em;
+            }
+            
+            .skill-item {
+                padding: 20px;
+            }
+        }
+
+        /* === SCROLLBAR SANGRIENTA === */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--hunter-gray);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--neon-red), var(--blood-red));
+            border-radius: 5px;
+            border: 1px solid rgba(139, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--blood-red), var(--neon-red));
+            box-shadow: 0 0 10px var(--neon-red);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="bloodborne-overlay"></div>
+    <div class="blood-drips">
+        <div class="blood-drip"></div>
+        <div class="blood-drip"></div>
+        <div class="blood-drip"></div>
+        <div class="blood-drip"></div>
+        <div class="blood-drip"></div>
+        <div class="blood-drip"></div>
+    </div>
+    
+    <nav>
+        <div class="logo glitch">Tturco.M</div>
+        <div class="nav-links">
+            <a href="index.html">HOME</a>
+            <a href="habilidades.html" class="active">HABILIDADES</a>
+            <a href="retos.html">RETOS</a>
+            <a href="acciones.html">ACCIONES</a>
+            <a href="canvas.html">CANVAS</a>
+            <a href="perfil1.html">PERFIL</a>
+        </div>
+        <div class="social-links">
+            <a href="https://www.instagram.com/tcotfus/" target="_blank">Instagram ↗</a>
+            <a href="https://twitter.com" target="_blank">Twitter ↗</a>
+            <a href="https://github.com" target="_blank">GitHub ↗</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="neon-text">HABILIDADES </h1>
+            <p class="cyan-text">[SISTEMA DE COMPETENCIAS ACTIVADO - BLOOD ECHOES SYNCHRONIZED]</p>
+        </div>
+
+        <!-- Habilidades Personales -->
+        <div class="window skills-window">
+            <div class="window-header">
+                <span>HABILIDADES_PERSONALES.exe</span>
+                <span class="window-close">✕</span>
+            </div>
+            <div class="window-content">
+                <div class="skill-category">
+                    <h3 class="cyan-text">PERSONAL</h3>
+                    <div class="skill-grid">
+                        <div class="skill-item">
+                            <div class="skill-icon">⚔️</div>
+                            <h4>Dibujo y arte</h4>
+                            <p>Dominio en la creacion de arte ,diseño y sistemas digitales</p>
+                            <div class="skill-level">
+                                <div class="level-bar" style="--skill-level: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">🎭</div>
+                            <h4>Máscara Creativa</h4>
+                            <p>Capacidad de adaptar estéticas y narrativas visuales</p>
+                            <div class="skill-level">
+                                <div class="level-bar" style="--skill-level: 78%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">🔮</div>
+                            <h4>Visión </h4>
+                            <p>Percepción para detectar patrones y oportunidades</p>
+                            <div class="skill-level">
+                                <div class="level-bar" style="--skill-level: 82%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Habilidades Sociales -->
+        <div class="window skills-window">
+            <div class="window-header">
+                <span>HABILIDADES_SOCIALES.sys</span>
+                <span class="window-close">✕</span>
+            </div>
+            <div class="window-content">
+                <div class="skill-category">
+                    <h3 class="cyan-text">COMUNIDAD</h3>
+                    <div class="skill-grid">
+                        <div class="skill-item">
+                            <div class="skill-icon">🤝</div>
+                            <h4> Cooperación</h4>
+                            <p>Colaboración efectiva en tareas grupales y proyectos</p>
+                            <div class="skill-level">
+                                <div class="level-bar" style="--skill-level: 88%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">🗣️</div>
+                            <h4>Inter relacion</h4>
+                            <p>Comunicación que ayudar a entenderme mas con mis compañeros y mas personas </p>
+                            <div class="skill-level">
+                                <div class="level-bar" style="--skill-level: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">🌀</div>
+                            <h4>Adaptación</h4>
+                            <p>Flexibilidad ante realidades y entornos cambiantes</p>
+                            <div class="skill-level">
+                                <div class="level-bar" style="--skill-level: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Habilidades Directivas -->
+        <div class="window skills-window">
+            <div class="window-header">
+                <span>HABILIDADES_DIRECTIVAS.cmd</span>
+                <span class="window-close">✕</span>
+            </div>
+            <div class="window-content">
+                <div class="skill-category">
+                    <h3 class="cyan-text">HABILADES DIRECTIVAS</h3>
+                    <div class="skill-grid">
+                        <div class="skill-item">
+                            <div class="skill-icon">👁️</div>
+                            <h4>Ojo Interno</h4>
+                            <p> La toma de decisiones cruciales</p>
+                            <div class="skill-level">
+                                <div class="level-bar" style="--skill-level: 72%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">📜</div>
+                            <h4>Tratado Estratégico</h4>
+                            <p>Planificación a corto y largo plazo</p>
+                            <div class="skill-level">
+                                <div class="level-bar" style="--skill-level: 68%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">👑</div>
+                            <h4>Metas claras</h4>
+                            <p>Inspiración y guía para alcanzar objetivos trascendentales</p>
+                            <div class="skill-level">
+                                <div class="level-bar" style="--skill-level: 65%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="character"></div>
+    <div class="barcode">HABILIDADES||SANGRE_ANTIGUA||EVOLUCIÓN</div>
+
+    <script>
+        // Sistema de efectos Bloodborne-Cyberpunk
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Inicializar barras de habilidad
+            setTimeout(() => {
+                document.querySelectorAll('.level-bar').forEach(bar => {
+                    bar.style.setProperty('--skill-level', '0%');
+                    setTimeout(() => {
+                        const level = bar.parentElement.getAttribute('data-level') || 
+                                    bar.style.getPropertyValue('--skill-level') || '70%';
+                        bar.style.setProperty('--skill-level', level);
+                    }, 500);
+                });
+            }, 1000);
+
+            // Efecto de cierre de ventanas
+            document.querySelectorAll('.window-close').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const window = e.target.closest('.window');
+                    closeWindowWithBloodEffect(window);
+                });
+            });
+
+            // Efectos hover en skills
+            document.querySelectorAll('.skill-item').forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.zIndex = '100';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.zIndex = '1';
+                });
+            });
+
+            // Efecto de sonido visual al hacer hover
+            document.querySelectorAll('.skill-icon').forEach(icon => {
+                icon.addEventListener('mouseenter', function() {
+                    this.style.animation = 'pulse 0.3s ease';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 300);
+                });
+            });
+
+            // Efecto parallax gótico
+            document.addEventListener('mousemove', (e) => {
+                const grid = document.querySelector('.grid-bg');
+                const x = (e.clientX / window.innerWidth - 0.5) * 20;
+                const y = (e.clientY / window.innerHeight - 0.5) * 20;
+                
+                grid.style.transform = `translate(${x}px, ${y}px) rotateX(${y}deg) rotateY(${x}deg)`;
+            });
+
+            // Efecto de escritura en títulos
+            const titles = document.querySelectorAll('.window-header span');
+            titles.forEach((title, index) => {
+                const text = title.textContent;
+                title.textContent = '';
+                
+                setTimeout(() => {
+                    let i = 0;
+                    const typeWriter = () => {
+                        if (i < text.length) {
+                            title.textContent += text.charAt(i);
+                            i++;
+                            setTimeout(typeWriter, 40);
+                        }
+                    };
+                    typeWriter();
+                }, index * 200);
+            });
+        });
+
+        function closeWindowWithBloodEffect(window) {
+            // Crear efecto de sangre al cerrar
+            const bloodEffect = document.createElement('div');
+            bloodEffect.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle, rgba(139,0,0,0.3) 0%, transparent 70%);
+                z-index: 10;
+                pointer-events: none;
+            `;
+            window.appendChild(bloodEffect);
+
+            window.style.transform = 'scale(0.9) translateY(20px)';
+            window.style.opacity = '0';
+            window.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+                window.style.display = 'none';
+            }, 600);
+        }
+
+        // Efecto de respiración del cazador
+        function hunterBreath() {
+            const breath = document.createElement('div');
+            breath.style.cssText = `
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 2px;
+                background: linear-gradient(90deg, transparent, var(--neon-red), transparent);
+                z-index: 1;
+                opacity: 0;
+                animation: breath 4s ease-in-out infinite;
+            `;
+            document.body.appendChild(breath);
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes breath {
+                    0%, 100% { opacity: 0; transform: scaleX(0); }
+                    50% { opacity: 0.3; transform: scaleX(1); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Iniciar efectos ambientales
+        setTimeout(hunterBreath, 2000);
+    </script>
+</body>
+</html>

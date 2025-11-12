@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Personal - tturco.omg</title>
+    <style>
+        :root {
+            --neon-pink: #908590;
+            --neon-cyan: #00ffff;
+            --neon-blue: #0080ff;
+            --neon-green: #00ff00;
+            --neon-purple: #8000ff;
+            --neon-orange: #ff8000;
+            --dark-bg: #0a0a0a;
+            --darker-bg: #050505;
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --header-bg: rgba(30, 30, 30, 0.9);
+            --grid-color: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: #fff;
+            font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* === FONDO MEJORADO === */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            animation: gridMove 15s linear infinite;
+        }
+
+        .grid-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(128, 0, 255, 0.05) 0%, transparent 50%);
+            animation: pulseGlow 10s ease-in-out infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(40px, 40px) rotate(0.2deg); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
+        }
+
+        /* === NAVEGACIÓN === */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--neon-pink);
+            text-shadow: 
+                0 0 10px var(--neon-pink),
+                0 0 20px var(--neon-pink),
+                0 0 30px var(--neon-pink);
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+            animation: scanLine 2s linear infinite;
+        }
+
+        @keyframes scanLine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .nav-links a.active {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            background: rgba(255, 0, 255, 0.1);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-links a {
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 11px;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .social-links a:hover {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 
+                0 0 10px var(--neon-pink),
+                inset 0 0 10px rgba(255, 0, 255, 0.1);
+        }
+
+        /* === CONTENEDOR PRINCIPAL === */
+        .container {
+            position: relative;
+            z-index: 10;
+            padding: 120px 40px 60px;
+            min-height: 100vh;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* === HEADER DE PÁGINA === */
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                transparent, 
+                rgba(255, 0, 255, 0.05), 
+                rgba(0, 255, 255, 0.05), 
+                transparent);
+            animation: headerShimmer 6s ease-in-out infinite;
+        }
+
+        @keyframes headerShimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .page-header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .page-header p {
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+
+        /* === CANVAS CONTAINER MEJORADO === */
+        .canvas-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 50px;
+            height: 700px;
+            perspective: 1000px;
+        }
+
+        .canvas-section {
+            padding: 25px;
+            border: 2px solid;
+            border-radius: 12px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .canvas-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .canvas-section:hover {
+            transform: translateY(-10px) scale(1.05) rotateX(5deg);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.6),
+                0 0 30px currentColor;
+            z-index: 100;
+        }
+
+        .canvas-section:hover::before {
+            opacity: 1;
+        }
+
+        .canvas-section.expanded {
+            grid-column: 1 / -1;
+            grid-row: 1 / -1;
+            z-index: 1000;
+            transform: scale(1.02);
+            animation: expandPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes expandPulse {
+            0%, 100% { box-shadow: 0 0 50px currentColor; }
+            50% { box-shadow: 0 0 80px currentColor; }
+        }
+
+        .canvas-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .canvas-content {
+            font-size: 12px;
+            line-height: 1.5;
+            position: relative;
+            z-index: 2;
+            opacity: 0.9;
+        }
+
+        .canvas-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .canvas-content li {
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            border-left: 3px solid currentColor;
+            transition: all 0.3s ease;
+        }
+
+        .canvas-content li:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+            border-left-width: 6px;
+        }
+
+        /* === POSICIONES DEL CANVAS === */
+        .partners {
+            grid-area: 1 / 1 / 2 / 2;
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        .activities {
+            grid-area: 1 / 2 / 2 / 4;
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+        }
+
+        .value {
+            grid-area: 1 / 4 / 2 / 6;
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+
+        .relationships {
+            grid-area: 2 / 1 / 3 / 2;
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .segments {
+            grid-area: 2 / 2 / 3 / 3;
+            border-color: var(--neon-orange);
+            color: var(--neon-orange);
+        }
+
+        .resources {
+            grid-area: 3 / 1 / 4 / 3;
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+        }
+
+        .channels {
+            grid-area: 3 / 3 / 4 / 4;
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        .costs {
+            grid-area: 2 / 4 / 4 / 5;
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .revenue {
+            grid-area: 2 / 5 / 4 / 6;
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        /* === VENTANA DE VALOR PERSONAL === */
+        .value-window {
+            background: var(--card-bg);
+            border: 2px solid var(--neon-pink);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 40px;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(255, 0, 255, 0.3);
+        }
+
+        .value-window .window-header {
+            background: var(--header-bg);
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .value-window .window-header::before {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--neon-pink), 
+                var(--neon-cyan), 
+                transparent);
+        }
+
+        .value-window .window-close {
+            cursor: pointer;
+            color: var(--neon-pink);
+            font-weight: bold;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            background: rgba(255, 0, 255, 0.1);
+        }
+
+        .value-window .window-close:hover {
+            background: rgba(255, 0, 255, 0.3);
+            text-shadow: 0 0 15px var(--neon-pink);
+            transform: scale(1.2);
+        }
+
+        .value-window .window-content {
+            padding: 40px;
+        }
+
+        .value-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .value-item {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .value-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent);
+            transition: left 0.6s ease;
+        }
+
+        .value-item:hover::before {
+            left: 100%;
+        }
+
+        .value-item:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .value-item h4 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .value-item h4::before {
+            content: '✦';
+            color: var(--neon-pink);
+            font-size: 1.2em;
+        }
+
+        .value-item p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .video-section {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .video-section h4 {
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .video-placeholder {
+            padding: 40px;
+        }
+
+        .cyber-button {
+            background: transparent;
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            padding: 15px 30px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 0, 255, 0.4), 
+                transparent);
+            transition: left 0.5s ease;
+        }
+
+        .cyber-button:hover::before {
+            left: 100%;
+        }
+
+        .cyber-button:hover {
+            background: var(--neon-pink);
+            color: #000;
+            box-shadow: 
+                0 0 20px var(--neon-pink),
+                0 0 40px var(--neon-pink);
+            transform: scale(1.05);
+        }
+
+        /* === ELEMENTOS DECORATIVOS === */
+        .character {
+            position: fixed;
+            bottom: -100px;
+            right: -100px;
+            width: 500px;
+            height: 700px;
+            background: linear-gradient(135deg, var(--neon-pink), var(--neon-cyan));
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+            opacity: 0.03;
+            z-index: 1;
+            animation: characterPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes characterPulse {
+            0%, 100% { 
+                opacity: 0.03;
+                transform: scale(1) rotate(0deg);
+            }
+            50% { 
+                opacity: 0.06;
+                transform: scale(1.1) rotate(5deg);
+            }
+        }
+
+        .barcode {
+            position: fixed;
+            bottom: 30px;
+            left: 40px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 3px;
+            z-index: 1;
+            animation: barcodeFlicker 5s ease-in-out infinite;
+        }
+
+        @keyframes barcodeFlicker {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.4; }
+        }
+
+        /* === EFECTOS DE TEXTO === */
+        .neon-text {
+            color: var(--neon-pink);
+            text-shadow: 
+                0 0 5px var(--neon-pink),
+                0 0 10px var(--neon-pink),
+                0 0 20px var(--neon-pink),
+                0 0 40px var(--neon-pink);
+            animation: neonPulse 2s ease-in-out infinite alternate;
+        }
+
+        .cyan-text {
+            color: var(--neon-cyan);
+            text-shadow: 
+                0 0 5px var(--neon-cyan),
+                0 0 10px var(--neon-cyan),
+                0 0 20px var(--neon-cyan),
+                0 0 40px var(--neon-cyan);
+            animation: cyanPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            from {
+                text-shadow: 
+                    0 0 5px var(--neon-pink),
+                    0 0 10px var(--neon-pink),
+                    0 0 20px var(--neon-pink);
+            }
+            to {
+                text-shadow: 
+                    0 0 10px var(--neon-pink),
+                    0 0 20px var(--neon-pink),
+                    0 0 30px var(--neon-pink),
+                    0 0 40px var(--neon-pink);
+            }
+        }
+
+        @keyframes cyanPulse {
+            from {
+                text-shadow: 
+                    0 0 5px var(--neon-cyan),
+                    0 0 10px var(--neon-cyan),
+                    0 0 20px var(--neon-cyan);
+            }
+            to {
+                text-shadow: 
+                    0 0 10px var(--neon-cyan),
+                    0 0 20px var(--neon-cyan),
+                    0 0 30px var(--neon-cyan),
+                    0 0 40px var(--neon-cyan);
+            }
+        }
+
+        .glitch {
+            position: relative;
+            color: #fff;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1200px) {
+            .canvas-container {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+                height: auto;
+                min-height: 800px;
+            }
+            
+            .partners { grid-area: 1 / 1 / 2 / 2; }
+            .activities { grid-area: 1 / 2 / 2 / 4; }
+            .value { grid-area: 2 / 1 / 3 / 4; }
+            .relationships { grid-area: 3 / 1 / 4 / 2; }
+            .segments { grid-area: 3 / 2 / 4 / 3; }
+            .resources { grid-area: 4 / 1 / 5 / 2; }
+            .channels { grid-area: 4 / 2 / 5 / 3; }
+            .costs { grid-area: 3 / 3 / 5 / 4; }
+            .revenue { grid-area: 4 / 3 / 5 / 4; }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 12px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                gap: 5px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links a {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            
+            .social-links {
+                gap: 8px;
+            }
+            
+            .container {
+                padding: 140px 20px 30px;
+            }
+            
+            .canvas-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(9, auto);
+                gap: 10px;
+            }
+            
+            .canvas-section {
+                grid-area: auto !important;
+                min-height: 150px;
+            }
+            
+            .value-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header h1 {
+                font-size: 2em;
+            }
+            
+            .character {
+                display: none;
+            }
+        }
+
+        /* === SCROLLBAR PERSONALIZADA === */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--neon-pink), var(--neon-cyan));
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--neon-cyan), var(--neon-pink));
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    
+    <nav>
+        <div class="logo glitch">Tturco.M</div>
+        <div class="nav-links">
+            <a href="index.html">HOME</a>
+            <a href="habilidades.html">HABILIDADES</a>
+            <a href="retos.html">RETOS</a>
+            <a href="acciones.html">ACCIONES</a>
+            <a href="canvas.html" class="active">CANVAS</a>
+            <a href="perfil1.html">PERFIL</a>
+        </div>
+        <div class="social-links">
+            <a href="https://www.instagram.com/tcotfus/" target="_blank">Instagram ↗</a>
+            <a href="https://twitter.com" target="_blank">Twitter ↗</a>
+            <a href="https://github.com" target="_blank">GitHub ↗</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="neon-text">BUSINESS MODEL YOU</h1>
+            <p class="cyan-text">[CANVAS PERSONAL ACTIVADO - SISTEMA DE VALOR INICIADO]</p>
+        </div>
+
+        <!-- Canvas Grid Interactivo -->
+        <div class="canvas-container">
+            <!-- Fila 1 -->
+            <div class="canvas-section partners">
+                <h3 class="canvas-title">ALIADOS CLAVE</h3>
+                <div class="canvas-content">
+                    <ul>
+                        <li>Me ayudan mis seres queridos,
+                             amigos y mentores que me brindan apoyo emocional,
+                              consejos, motivación y nuevas perspectivas 
+                              para seguir creciendo</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="canvas-section activities">
+                <h3 class="canvas-title">ACTIVIDADES CLAVE</h3>
+                <div class="canvas-content">
+                    <ul>
+                        <li>Me dedico a mejorar continuamente
+                             mis conocimientos, ayudar a los demás
+                              cuando puedo y buscar oportunidades
+                               para crecer tanto personal como
+                                profesionalmente.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="canvas-section value">
+                <h3 class="canvas-title">¿Cómo ayudas?</h3>
+                <div class="canvas-content">
+                    <ul>
+                        <li>Apoyo a las personas compartiendo
+                             mis conocimientos, brindando consejos,
+                              escuchando con atención y ofreciendo 
+                              soluciones prácticas cuando alguien lo necesita.
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Fila 2 -->
+            <div class="canvas-section relationships">
+                <h3 class="canvas-title">¿Quién eres y qué tienes?</h3>
+                <div class="canvas-content">
+                    <ul>
+                        <li>Soy una persona responsable,
+                             empática y comprometida con mis metas.
+                              Tengo habilidades sociales y una actitud positiva
+                               que me ayuda a adaptarme fácilmente a
+                                diferentes entornos.
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+
+            <div class="canvas-section segments">
+                <h3 class="canvas-title">¿Cómo interactúas?</h3>
+                <div class="canvas-content">
+                    <ul>
+                        <li>Mantengo una comunicación clara,
+                             respetuosa y amable. Me gusta trabajar en equipo,
+                              escuchar diferentes puntos de vista y generar 
+                              un ambiente de confianza</li>
+                        
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Fila 3 -->
+            <div class="canvas-section resources">
+                <h3 class="canvas-title">¿Cómo pueden conocerte y cómo ofreces tus servicios?</h3>
+                <div class="canvas-content">
+                    <ul>
+                        <li>Pueden conocerme a través de mis redes sociales,
+                             en actividades grupales o en el ámbito académico
+                              y profesional, donde muestro mi forma de ser y colaborar.</li>
+                        
+                    </ul>
+                </div>
+            </div>
+
+            <div class="canvas-section channels">
+                <h3 class="canvas-title">¿Qué das?</h3>
+                <div class="canvas-content">
+                    <ul>
+                        <li>Doy lo mejor de mí en cada situación:
+                             tiempo, empatía, compromiso y energía positiva.
+                             Busco siempre dejar algo bueno en cada
+                              persona que conozco.</li>
+                       
+                    </ul>
+                </div>
+            </div>
+
+            <div class="canvas-section costs">
+                <h3 class="canvas-title">¿A quiénes ayudas?</h3>
+                <div class="canvas-content">
+                    <ul>
+                        <li>Me ayudan mis seres queridos, 
+                            amigos y mentores que me brindan apoyo emocional,
+                             consejos, motivación y nuevas perspectivas para
+                              seguir creciendo.</li>
+                        
+                    </ul>
+                </div>
+            </div>
+
+            <div class="canvas-section revenue">
+                <h3 class="canvas-title">¿Qué obtienes?S</h3>
+                <div class="canvas-content">
+                    <ul>
+                        <liD>Obtengo experiencias valiosas,
+                             aprendizaje constante, amistades sinceras
+                             y la satisfacción de saber que aporto algo
+                              positivo al entorno.</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Valor Personal Expandido -->
+        <div class="value-window">
+            <div class="window-header">
+                <span>VALOR_PERSONAL.exe</span>
+                <span class="window-close">✕</span>
+            </div>
+            <div class="window-content">
+                <h3 class="neon-text" style="text-align: center; margin-bottom: 30px;">CUALIDADES Y APORTES ÚNICOS</h3>
+                <div class="value-content">
+                    <div class="value-item">
+                        <h4>VISIÓN CREATIVA</h4>
+                        <p>Capacidad para transformar ideas abstractas y tratar de hacerlas tangibles , combinando creatividad y funcionalidad de manera armoniosa.</p>
+                    </div>
+                    <div class="value-item">
+                        <h4>RESILENCIA</h4>
+                        <p>Siempre tratar de seguir adelente y tratar de afrontar el problema pro muy grave que sea y tratar de aprender para que ya no vuelva a cuseder.</p>
+                    </div>
+                    <div class="value-item">
+                        <h4>ADAPTABILIDAD PROACTIVA</h4>
+                        <p>Habilidad para evolucionar , adaptarme ante cualquier circunstancia y  adaptar soluciones a contextos cambiantes.</p>
+                    </div>
+                    <div class="value-item">
+                        <h4>ENFOQUE ESTRATÉGICO</h4>
+                        <p>Comprensión profunda de los objetivos para desarrollar soluciones en tiempo  real.</p>
+                    </div>
+                </div>
+                
+                <div class="video-section">
+                    <h4 class="cyan-text">MANIFIESTO PERSONAL</h4>
+                    <div class="video-placeholder">
+                        <p style="margin-bottom: 20px; font-size: 16px; opacity: 0.9;">
+                            "Creo en el poder transformador de la tecnología cuando se combina con creatividad y propósito humano."
+                        </p>
+                        <button class="cyber-button" onclick="playManifesto()">VER MANIFIESTO COMPLETO</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="character"></div>
+    <div class="barcode">CANVAS||MODELO_PERSONAL||EVOLUCIÓN</div>
+
+    <script>
+        // Sistema interactivo del Canvas
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Efecto de expansión en secciones del canvas
+            const canvasSections = document.querySelectorAll('.canvas-section');
+            let expandedSection = null;
+
+            canvasSections.forEach(section => {
+                section.addEventListener('click', function() {
+                    // Si ya hay una sección expandida, contraerla
+                    if (expandedSection && expandedSection !== this) {
+                        expandedSection.classList.remove('expanded');
+                    }
+                    
+                    // Alternar estado de expansión
+                    this.classList.toggle('expanded');
+                    
+                    if (this.classList.contains('expanded')) {
+                        expandedSection = this;
+                        
+                        // Efecto visual al expandir
+                        this.style.animation = 'expandPulse 2s ease-in-out';
+                        
+                        // Scroll suave a la sección expandida
+                        this.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    } else {
+                        expandedSection = null;
+                    }
+                });
+            });
+
+            // Efecto de cierre en la ventana de valor
+            document.querySelector('.value-window .window-close').addEventListener('click', function() {
+                const window = this.closest('.value-window');
+                closeWindowWithEffect(window);
+            });
+
+            // Animación de entrada para las secciones del canvas
+            canvasSections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(50px) scale(0.8)';
+                
+                setTimeout(() => {
+                    section.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0) scale(1)';
+                }, index * 100);
+            });
+
+            // Efecto parallax en el grid
+            document.addEventListener('mousemove', (e) => {
+                const grid = document.querySelector('.grid-bg');
+                const x = (e.clientX / window.innerWidth - 0.5) * 20;
+                const y = (e.clientY / window.innerHeight - 0.5) * 20;
+                
+                grid.style.transform = `translate(${x}px, ${y}px) rotateX(${y}deg) rotateY(${x}deg)`;
+            });
+
+            // Efecto de resaltado al pasar sobre items
+            document.querySelectorAll('.canvas-content li').forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.background = 'rgba(255, 255, 255, 0.15)';
+                    this.style.borderLeftColor = 'var(--neon-pink)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.background = 'rgba(255, 255, 255, 0.05)';
+                    this.style.borderLeftColor = 'currentColor';
+                });
+            });
+        });
+
+        function closeWindowWithEffect(window) {
+            window.style.transform = 'scale(0.9) translateY(20px)';
+            window.style.opacity = '0';
+            window.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+                window.style.display = 'none';
+            }, 400);
+        }
+
+        function playManifesto() {
+            const button = event.target;
+            const originalText = button.textContent;
+            
+            // Efecto visual del botón
+            button.textContent = 'CARGANDO MANIFIESTO...';
+            button.style.background = 'var(--neon-cyan)';
+            button.style.color = '#000';
+            button.style.boxShadow = '0 0 30px var(--neon-cyan)';
+            
+            setTimeout(() => {
+                // Simular reproducción del manifiesto
+                button.textContent = '🎬 REPRODUCIENDO...';
+                button.style.background = 'var(--neon-pink)';
+                button.style.boxShadow = '0 0 40px var(--neon-pink)';
+                
+                // Crear efecto de video
+                const videoEffect = document.createElement('div');
+                videoEffect.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 300px;
+                    height: 200px;
+                    background: rgba(0, 0, 0, 0.9);
+                    border: 3px solid var(--neon-pink);
+                    z-index: 1000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 18px;
+                    color: var(--neon-cyan);
+                    backdrop-filter: blur(10px);
+                `;
+                videoEffect.textContent = '🎥 MANIFIESTO PERSONAL';
+                document.body.appendChild(videoEffect);
+                
+                setTimeout(() => {
+                    videoEffect.remove();
+                    button.textContent = 'MANIFIESTO COMPLETADO ✓';
+                    button.style.background = 'var(--neon-green)';
+                    button.style.boxShadow = '0 0 30px var(--neon-green)';
+                    button.style.color = '#000';
+                    
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = 'transparent';
+                        button.style.boxShadow = 'none';
+                        button.style.color = 'var(--neon-pink)';
+                    }, 2000);
+                }, 3000);
+            }, 1500);
+        }
+
+        // Sistema de conexiones visuales entre secciones
+        function createConnections() {
+            const connections = [
+                { from: 'partners', to: 'activities', color: 'var(--neon-green)' },
+                { from: 'activities', to: 'value', color: 'var(--neon-blue)' },
+                { from: 'value', to: 'relationships', color: 'var(--neon-pink)' },
+                { from: 'relationships', to: 'segments', color: 'var(--neon-cyan)' },
+                { from: 'resources', to: 'activities', color: 'var(--neon-purple)' },
+                { from: 'channels', to: 'relationships', color: 'var(--neon-green)' },
+                { from: 'costs', to: 'resources', color: '#ff4444' },
+                { from: 'revenue', to: 'value', color: '#00ff00' }
+            ];
+
+            // Esta función crearía líneas de conexión animadas entre secciones
+            // Se implementaría con SVG o elementos div posicionados
+        }
+
+        // Inicializar conexiones después de que se cargue la página
+        window.addEventListener('load', createConnections);
+    </script>
+</body>
+</html>
